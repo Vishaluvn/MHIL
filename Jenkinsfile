@@ -23,9 +23,19 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                bat 'robocopy publish D:\\inetpub\\wwwroot\\MHIL /MIR'
+                bat '''
+                iisreset /stop
+
+                robocopy publish D:\\inetpub\\wwwroot\\MHIL /MIR
+
+                IF %ERRORLEVEL% LEQ 7 (
+                    iisreset /start
+                    EXIT /B 0
+                )
+
+                EXIT /B %ERRORLEVEL%
+                '''
             }
         }
-
     }
 }
