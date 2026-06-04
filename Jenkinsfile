@@ -21,6 +21,12 @@ pipeline {
             }
         }
 
+        stage('Clean') {
+    steps {
+        bat 'if exist publish rmdir /s /q publish'
+    }
+}
+
         stage('Deploy') {
             steps {
                 bat '''
