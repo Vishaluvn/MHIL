@@ -15,17 +15,17 @@ pipeline {
             }
         }
 
+         stage('Clean') {
+    steps {
+        bat 'if exist publish rmdir /s /q publish'
+    }
+}
+
         stage('Publish') {
             steps {
                 bat 'dotnet publish mhil-net.csproj --configuration Release -o publish'
             }
         }
-
-        stage('Clean') {
-    steps {
-        bat 'if exist publish rmdir /s /q publish'
-    }
-}
 
         stage('Deploy') {
             steps {
