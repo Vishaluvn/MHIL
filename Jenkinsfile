@@ -69,8 +69,26 @@ pipeline {
         post {
             success {
             mail to: 'itcoblr.dev@muthootgroup.com,itvishal.n@muthootgroup.com,itcoblr@muthootgroup.com',
-                 subject: "SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                 body: "Deployment completed successfully. Application is working"
+                 subject: "✅ Deployment Successful | ${env.JOB_NAME} | Build #${env.BUILD_NUMBER}",
+            body: """
+Hello Team,
+
+The application deployment has completed successfully.
+
+Deployment Details:
+----------------------------------------
+Job Name      : ${env.JOB_NAME}
+Build Number  : ${env.BUILD_NUMBER}
+Status        : SUCCESS
+Triggered By  : Jenkins
+Build URL     : ${env.BUILD_URL}
+Deployment Time : ${new Date()}
+
+The latest application version has been deployed successfully to the target environment.
+
+Regards,
+IT Team
+"""
         }
         failure {
             bat '''
