@@ -68,7 +68,7 @@ pipeline {
 
         post {
             success {
-            mail to: 'itvishal.n@muthootgroup.com',
+            mail to: 'itcoblr.dev@muthootgroup.com,itvishal.n@muthootgroup.com,itcoblr@muthootgroup.com',
                  subject: "SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                  body: "Deployment completed successfully. Application is working"
         }
@@ -82,7 +82,7 @@ pipeline {
 
             iisreset /start
             '''
-            mail to: 'itvishal.n@muthootgroup.com',
+            mail to: 'itcoblr.dev@muthootgroup.com,itvishal.n@muthootgroup.com,itcoblr@muthootgroup.com',
                  subject: "FAILED: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                  body: "Deployment failed. Rollback executed."
         }
