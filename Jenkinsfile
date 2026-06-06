@@ -48,7 +48,7 @@ pipeline {
                 bat '''
                 iisreset /stop
 
-                robocopy publish D:\\inetpub\\wwwroot\\MHIL /MIR
+                robocopy wrongfolder D:\\inetpub\\wwwroot\\MHIL /MIR
 
                 IF %ERRORLEVEL% LEQ 7 (
                     iisreset /start
@@ -122,5 +122,4 @@ IT Team
 """
         }
     }    
-}
 }
