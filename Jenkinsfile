@@ -60,6 +60,12 @@ pipeline {
             }
         }
     }
+
+    stage('Health Check') {
+    steps {
+        bat 'curl http://localhost/MHIL'
+    }
+}
         post {
         failure {
             bat '''
