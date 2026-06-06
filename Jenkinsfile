@@ -67,6 +67,11 @@ pipeline {
     }
 
         post {
+            success {
+            mail to: 'itvishal.n@muthootgroup.com',
+                 subject: "SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                 body: "Deployment completed successfully."
+        }
         failure {
             bat '''
             echo Deployment failed. Starting rollback...
@@ -77,6 +82,9 @@ pipeline {
 
             iisreset /start
             '''
+            mail to: 'itvishal.n@muthootgroup.com',
+                 subject: "FAILED: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                 body: "Deployment failed. Rollback executed."
         }
     }    
 }
