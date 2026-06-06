@@ -61,7 +61,7 @@ pipeline {
         }
         stage('Health Check') {
     steps {
-        bat 'curl http://localhost/MHIL'
+        bat 'curl http://localhost:7685/'
     }
 }
     }
