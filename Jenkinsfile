@@ -60,4 +60,17 @@ pipeline {
             }
         }
     }
+        post {
+        failure {
+            bat '''
+            echo Deployment failed. Starting rollback...
+
+            iisreset /stop
+
+            robocopy D:\\Backup\\MHIL_Backup D:\\inetpub\\wwwroot\\MHIL /MIR
+
+            iisreset /start
+            '''
+        }
+    }
 }
