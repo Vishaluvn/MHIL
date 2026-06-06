@@ -27,6 +27,22 @@ pipeline {
             }
         }
 
+        stage('Backup') {
+            steps {
+                bat '''
+                if not exist D:\\Backup\\MHIL_Backup mkdir D:\\Backup\\MHIL_Backup
+
+                robocopy D:\\inetpub\\wwwroot\\MHIL D:\\Backup\\MHIL_Backup /MIR
+
+                IF %ERRORLEVEL% LEQ 7 (
+                    EXIT /B 0
+                )
+
+                EXIT /B %ERRORLEVEL%
+                '''
+            }
+        }
+
         stage('Deploy') {
             steps {
                 bat '''
