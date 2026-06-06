@@ -101,8 +101,25 @@ IT Team
             iisreset /start
             '''
             mail to: 'itcoblr.dev@muthootgroup.com,itvishal.n@muthootgroup.com,itcoblr@muthootgroup.com',
-                 subject: "FAILED: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                 body: "Deployment failed. Rollback executed."
+                subject: "❌ Deployment Failed | ${env.JOB_NAME} | Build #${env.BUILD_NUMBER}",
+            body: """
+Hello Team,
+
+The deployment has failed and requires attention.
+
+Failure Details:
+----------------------------------------
+Job Name      : ${env.JOB_NAME}
+Build Number  : ${env.BUILD_NUMBER}
+Status        : FAILED
+Build URL     : ${env.BUILD_URL}
+Failure Time  : ${new Date()}
+
+Please review the Jenkins console logs for detailed error information.
+
+Regards,
+IT Team
+"""
         }
     }    
 }
