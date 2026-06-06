@@ -79,4 +79,17 @@ pipeline {
             '''
         }
     }
+    post {
+    success {
+        mail to: 'itvishal.n@muthootgroup.com',
+             subject: "SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+             body: "Deployment completed successfully."
+    }
+
+    failure {
+        mail to: 'itvishal.n@muthootgroup.com',
+             subject: "FAILED: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+             body: "Deployment failed. Please check Jenkins logs."
+    }
+}
 }
