@@ -49,25 +49,28 @@ pipeline {
             }
         }
 
-        stage('Deploy') {
-            steps {
-                bat '''
-                iisreset /stop
+       stage('Deploy') {
+    steps {
+        bat '''
+        iisreset /stop
 
-                robocopy publish "%APP_PATH%" /MIR
+        robocopy publish "%APP_PATH%" /MIR
 
-                IF %ERRORLEVEL% LEQ 7 (
-                    iisreset /start
-                    EXIT /B 0
-                )
+        set RC=%ERRORLEVEL%
 
-                EXIT /B %ERRORLEVEL%
-                '''
-            }
-        }
+        iisreset /start
+
+        IF %RC% LEQ 7 (
+            EXIT /B 0
+        )
+
+        EXIT /B %RC%
+        '''
+    }
+}
         stage('Health Check') {
     steps {
-        bat 'curl -i APP_URL'
+        bat 'curl -i %APP_URL%'
     }
 }
     }
@@ -102,7 +105,7 @@ IT Team
 
             iisreset /stop
 
-            robocopy D:\\Backup\\MHIL_Backup D:\\inetpub\\wwwroot\\MHIL /MIR
+            robocopy "%BACKUP_PATH%" "%APP_PATH%" /MIR
 
             iisreset /start
             '''
