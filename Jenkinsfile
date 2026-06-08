@@ -49,12 +49,6 @@ pipeline {
             }
         }
 
-        stage('Approval') {
-    steps {
-        input message: 'Deployment package is ready. Proceed with deployment?'
-    }
-}
-
        stage('Deploy') {
     steps {
         bat '''
