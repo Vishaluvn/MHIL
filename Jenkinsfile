@@ -1,6 +1,12 @@
 pipeline {
     agent any
 
+     environment {
+        APP_PATH = 'D:\\inetpub\\wwwroot\\MHIL'
+        BACKUP_PATH = 'D:\\Backup\\MHIL_Backup'
+        APP_URL = 'http://localhost:7685'
+    }
+
     stages {
 
         stage('Restore') {
@@ -30,9 +36,9 @@ pipeline {
         stage('Backup') {
             steps {
                 bat '''
-                if not exist D:\\Backup\\MHIL_Backup mkdir D:\\Backup\\MHIL_Backup
+                if not exist "%BACKUP_PATH%" mkdir "%BACKUP_PATH%"
 
-                robocopy D:\\inetpub\\wwwroot\\MHIL D:\\Backup\\MHIL_Backup /MIR
+                robocopy "%APP_PATH%" "%BACKUP_PATH%" /MIR
 
                 IF %ERRORLEVEL% LEQ 7 (
                     EXIT /B 0
@@ -48,7 +54,7 @@ pipeline {
                 bat '''
                 iisreset /stop
 
-                robocopy publish D:\\inetpub\\wwwroot\\MHIL /MIR
+                robocopy publish "%APP_PATH%" /MIR
 
                 IF %ERRORLEVEL% LEQ 7 (
                     iisreset /start
@@ -61,7 +67,7 @@ pipeline {
         }
         stage('Health Check') {
     steps {
-        bat 'curl -i http://localhost:7685/'
+        bat 'curl -i APP_URL'
     }
 }
     }
