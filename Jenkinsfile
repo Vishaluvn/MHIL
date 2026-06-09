@@ -79,7 +79,7 @@ pipeline {
             success {
                 archiveArtifacts artifacts: 'publish/**', fingerprint: true
             mail to: 'itcoblr.dev@muthootgroup.com,itvishal.n@muthootgroup.com,itcoblr@muthootgroup.com',
-                 subject: "✅ Deployment Successful | ${env.JOB_NAME} | Build #${env.BUILD_NUMBER}",
+                 subject: "✅ Deploymentt Successful | ${env.JOB_NAME} | Build #${env.BUILD_NUMBER}",
             body: """
 Hello Team,
 
