@@ -1,7 +1,5 @@
 pipeline {
 agent any
-
-```
 environment {
     IMAGE_NAME = 'mhil'
     IMAGE_TAG = "${BUILD_NUMBER}"
@@ -80,7 +78,6 @@ post {
         mail to: 'itcoblr.dev@muthootgroup.com,itvishal.n@muthootgroup.com',
              subject: "✅ Docker Deployment Successful | ${env.JOB_NAME} | Build #${env.BUILD_NUMBER}",
              body: """
-```
 
 Hello Team,
 
@@ -98,12 +95,10 @@ Jenkins
 """
 }
 
-```
     failure {
         mail to: 'itcoblr.dev@muthootgroup.com,itvishal.n@muthootgroup.com',
              subject: "❌ Docker Deployment Failed | ${env.JOB_NAME} | Build #${env.BUILD_NUMBER}",
              body: """
-```
 
 Hello Team,
 
