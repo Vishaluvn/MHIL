@@ -1,0 +1,124 @@
+pipeline {
+agent any
+
+```
+environment {
+    IMAGE_NAME = 'mhil'
+    IMAGE_TAG = "${BUILD_NUMBER}"
+    CONTAINER_NAME = 'mhil-app'
+    APP_URL = 'http://localhost:9090'
+}
+
+stages {
+
+    stage('Restore') {
+        steps {
+            bat 'dotnet restore mhil-net.sln'
+        }
+    }
+
+    stage('Build') {
+        steps {
+            bat 'dotnet build mhil-net.sln --configuration Release'
+        }
+    }
+
+    stage('Clean') {
+        steps {
+            bat 'if exist publish rmdir /s /q publish'
+        }
+    }
+
+    stage('Publish') {
+        steps {
+            bat 'dotnet publish mhil-net.csproj --configuration Release -o publish'
+        }
+    }
+
+    stage('Docker Build') {
+        steps {
+            bat '''
+            docker build -t %IMAGE_NAME%:%IMAGE_TAG% .
+            '''
+        }
+    }
+
+    stage('Stop Old Container') {
+        steps {
+            bat '''
+            docker stop %CONTAINER_NAME% 2>nul
+            docker rm %CONTAINER_NAME% 2>nul
+            exit /b 0
+            '''
+        }
+    }
+
+    stage('Run Container') {
+        steps {
+            bat '''
+            docker run -d ^
+            --name %CONTAINER_NAME% ^
+            -p 9090:8080 ^
+            %IMAGE_NAME%:%IMAGE_TAG%
+            '''
+        }
+    }
+
+    stage('Health Check') {
+        steps {
+            bat '''
+            timeout /t 10
+            curl -i %APP_URL%
+            '''
+        }
+    }
+}
+
+post {
+
+    success {
+        mail to: 'itcoblr.dev@muthootgroup.com,itvishal.n@muthootgroup.com',
+             subject: "✅ Docker Deployment Successful | ${env.JOB_NAME} | Build #${env.BUILD_NUMBER}",
+             body: """
+```
+
+Hello Team,
+
+Docker deployment completed successfully.
+
+Job Name     : ${env.JOB_NAME}
+Build Number : ${env.BUILD_NUMBER}
+Status       : SUCCESS
+
+Application URL:
+${env.APP_URL}
+
+Regards,
+Jenkins
+"""
+}
+
+```
+    failure {
+        mail to: 'itcoblr.dev@muthootgroup.com,itvishal.n@muthootgroup.com',
+             subject: "❌ Docker Deployment Failed | ${env.JOB_NAME} | Build #${env.BUILD_NUMBER}",
+             body: """
+```
+
+Hello Team,
+
+Docker deployment failed.
+
+Job Name     : ${env.JOB_NAME}
+Build Number : ${env.BUILD_NUMBER}
+Status       : FAILED
+
+Build URL:
+${env.BUILD_URL}
+
+Regards,
+Jenkins
+"""
+}
+}
+}
