@@ -50,14 +50,14 @@ pipeline {
             }
         }
 
-   stage('SonarQube Analysis') {
+stage('SonarQube Analysis') {
     steps {
         bat '''
-        dotnet sonarscanner begin /k:"MHIL" /d:sonar.host.url="http://localhost:9000" /d:sonar.token="%SONAR_TOKEN%"
+        C:\\Users\\Muthoot\\.dotnet\\tools\\dotnet-sonarscanner begin /k:"MHIL" /d:sonar.host.url="http://localhost:9000" /d:sonar.token="%SONAR_TOKEN%"
 
         dotnet build mhil-net.sln
 
-        dotnet sonarscanner end /d:sonar.token="%SONAR_TOKEN%"
+        C:\\Users\\Muthoot\\.dotnet\\tools\\dotnet-sonarscanner end /d:sonar.token="%SONAR_TOKEN%"
         '''
     }
 }
