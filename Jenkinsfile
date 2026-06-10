@@ -5,6 +5,7 @@ pipeline {
         APP_PATH = 'D:\\inetpub\\wwwroot\\MHIL'
         BACKUP_PATH = 'D:\\Backup\\MHIL_Backup'
         APP_URL = 'http://localhost:7685'
+        SONAR_TOKEN = credentials('sonar-token')
     }
 
     stages {
@@ -48,6 +49,18 @@ pipeline {
                 '''
             }
         }
+
+        stage('SonarQube Analysis') {
+    steps {
+        bat '''
+        dotnet sonarscanner begin /k:"MHIL" /d:sonar.host.url="http://localhost:9000" /d:sonar.token="%SONAR_TOKEN%"
+
+        dotnet build mhil-net.sln
+
+        dotnet sonarscanner end /d:sonar.token="%SONAR_TOKEN%"
+        '''
+    }
+}
 
        stage('Deploy') {
     steps {
