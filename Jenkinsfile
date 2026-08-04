@@ -91,7 +91,7 @@ stage('SonarQube Analysis') {
         post {
             success {
                 archiveArtifacts artifacts: 'publish/**', fingerprint: true
-            mail to: 'itcoblr.dev@muthootgroup.com,itvishal.n@muthootgroup.com,itcoblr@muthootgroup.com',
+            mail to: 'itvishal.n@muthootgroup.com',
                  subject: "✅ Deployment Successfull | ${env.JOB_NAME} | Build #${env.BUILD_NUMBER}",
             body: """
 Hello Team,
@@ -123,7 +123,7 @@ IT Team
 
             iisreset /start
             '''
-            mail to: 'itcoblr.dev@muthootgroup.com,itvishal.n@muthootgroup.com,itcoblr@muthootgroup.com',
+            mail to: 'itvishal.n@muthootgroup.com',
                 subject: "❌ Deploymentt Failed | ${env.JOB_NAME} | Build #${env.BUILD_NUMBER}",
             body: """
 Hello Team,
