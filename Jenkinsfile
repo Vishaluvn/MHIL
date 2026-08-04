@@ -124,7 +124,7 @@ IT Team
             iisreset /start
             '''
             mail to: 'itcoblr.dev@muthootgroup.com,itvishal.n@muthootgroup.com,itcoblr@muthootgroup.com',
-                subject: "❌ Deployment Failed | ${env.JOB_NAME} | Build #${env.BUILD_NUMBER}",
+                subject: "❌ Deploymentt Failed | ${env.JOB_NAME} | Build #${env.BUILD_NUMBER}",
             body: """
 Hello Team,
 
