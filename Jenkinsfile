@@ -1,7 +1,7 @@
 pipeline {
     agent any
 
-     environment {
+    environment {
         APP_PATH = 'D:\\inetpub\\wwwroot\\MHIL'
         BACKUP_PATH = 'D:\\Backup\\MHIL_Backup'
         APP_URL = 'http://localhost:7685'
@@ -16,21 +16,41 @@ pipeline {
             }
         }
 
-        stage('Build') {
+        stage('SonarQube Begin') {
             steps {
-                bat 'dotnet build mhil-net.sln --configuration Release'
+                bat '''
+                C:\\Users\\Muthoot\\.dotnet\\tools\\dotnet-sonarscanner begin ^
+                  /k:"MHIL" ^
+                  /d:sonar.host.url="http://localhost:9000" ^
+                  /d:sonar.token="%SONAR_TOKEN%"
+                '''
             }
         }
 
-         stage('Clean') {
-    steps {
-        bat 'if exist publish rmdir /s /q publish'
-    }
-}
+        stage('Build') {
+            steps {
+                bat 'dotnet build mhil-net.sln --configuration Release --no-restore'
+            }
+        }
+
+        stage('SonarQube End') {
+            steps {
+                bat '''
+                C:\\Users\\Muthoot\\.dotnet\\tools\\dotnet-sonarscanner end ^
+                  /d:sonar.token="%SONAR_TOKEN%"
+                '''
+            }
+        }
+
+        stage('Clean') {
+            steps {
+                bat 'if exist publish rmdir /s /q publish'
+            }
+        }
 
         stage('Publish') {
             steps {
-                bat 'dotnet publish mhil-net.csproj --configuration Release -o publish'
+                bat 'dotnet publish mhil-net.csproj --configuration Release -o publish --no-restore'
             }
         }
 
@@ -50,50 +70,40 @@ pipeline {
             }
         }
 
-stage('SonarQube Analysis') {
-    steps {
-        bat '''
-        C:\\Users\\Muthoot\\.dotnet\\tools\\dotnet-sonarscanner begin /k:"MHIL" /d:sonar.host.url="http://localhost:9000" /d:sonar.token="%SONAR_TOKEN%"
+        stage('Deploy') {
+            steps {
+                bat '''
+                iisreset /stop
 
-        dotnet build mhil-net.sln
+                robocopy publish "%APP_PATH%" /MIR
 
-        C:\\Users\\Muthoot\\.dotnet\\tools\\dotnet-sonarscanner end /d:sonar.token="%SONAR_TOKEN%"
-        '''
-    }
-}
+                set RC=%ERRORLEVEL%
 
-       stage('Deploy') {
-    steps {
-        bat '''
-        iisreset /stop
+                iisreset /start
 
-        robocopy publish "%APP_PATH%" /MIR
+                IF %RC% LEQ 7 (
+                    EXIT /B 0
+                )
 
-        set RC=%ERRORLEVEL%
+                EXIT /B %RC%
+                '''
+            }
+        }
 
-        iisreset /start
-
-        IF %RC% LEQ 7 (
-            EXIT /B 0
-        )
-
-        EXIT /B %RC%
-        '''
-    }
-}
         stage('Health Check') {
-    steps {
-        bat 'curl -i %APP_URL%'
-    }
-}
+            steps {
+                bat 'curl -i %APP_URL%'
+            }
+        }
     }
 
-        post {
-            success {
-                archiveArtifacts artifacts: 'publish/**', fingerprint: true
+    post {
+        success {
+            archiveArtifacts artifacts: 'publish/**', fingerprint: true
+
             mail to: 'itvishal.n@muthootgroup.com',
-                 subject: "✅ Deploymentt Successfull | ${env.JOB_NAME} | Build #${env.BUILD_NUMBER}",
-            body: """
+                subject: "✅ Deployment Successful | ${env.JOB_NAME} | Build #${env.BUILD_NUMBER}",
+                body: """
 Hello Team,
 
 The application deployment has completed successfully.
@@ -113,6 +123,7 @@ Regards,
 IT Team
 """
         }
+
         failure {
             bat '''
             echo Deployment failed. Starting rollback...
@@ -123,9 +134,10 @@ IT Team
 
             iisreset /start
             '''
+
             mail to: 'itvishal.n@muthootgroup.com',
-                subject: "❌ Deploymentt Failed | ${env.JOB_NAME} | Build #${env.BUILD_NUMBER}",
-            body: """
+                subject: "❌ Deployment Failed | ${env.JOB_NAME} | Build #${env.BUILD_NUMBER}",
+                body: """
 Hello Team,
 
 The deployment has failed and requires attention.
@@ -144,5 +156,5 @@ Regards,
 IT Team
 """
         }
-    }    
+    }
 }
